@@ -1823,24 +1823,28 @@ bool Project::readWildMonData() {
         for (QJsonValue encounter : encounters) {
             QString mapConstant = encounter.toObject().value("map").toString();
 
-            WildPokemonHeader header;
+            for(QJsonValue encounter : encounter.toObject().value("headers").toArray()) {
+                WildPokemonHeader header;
 
-            for (EncounterField monField : wildMonFields) {
-                QString field = monField.name;
-                if (encounter.toObject().value(field) != QJsonValue::Undefined) {
-                    header.wildMons[field].active = true;
-                    header.wildMons[field].encounterRate = encounter.toObject().value(field).toObject().value("encounter_rate").toInt();
-                    for (QJsonValue mon : encounter.toObject().value(field).toObject().value("mons").toArray()) {
-                        WildPokemon newMon;
-                        newMon.minLevel = mon.toObject().value("min_level").toInt();
-                        newMon.maxLevel = mon.toObject().value("max_level").toInt();
-                        newMon.species = mon.toObject().value("species").toString();
-                        header.wildMons[field].wildPokemon.append(newMon);
+                for (EncounterField monField : wildMonFields) {
+                    QString field = monField.name;
+                    if (encounter.toObject().value(field) != QJsonValue::Undefined) {
+                        header.wildMons[field].active = true;
+                        header.wildMons[field].encounterRate = encounter.toObject().value(field).toObject().value("encounter_rate").toInt();
+                        for (QJsonValue mon : encounter.toObject().value(field).toObject().value("mons").toArray()) {
+                            WildPokemon newMon;
+                            newMon.minLevel = mon.toObject().value("min_level").toInt();
+                            newMon.maxLevel = mon.toObject().value("max_level").toInt();
+                            newMon.species = mon.toObject().value("species").toString();
+                            header.wildMons[field].wildPokemon.append(newMon);
+                        }
                     }
                 }
+
+                wildMonData[mapConstant].insert({encounter.toObject().value("base_label").toString(), header});
+                encounterGroupLabels.append(encounter.toObject().value("base_label").toString());
+
             }
-            wildMonData[mapConstant].insert({encounter.toObject().value("base_label").toString(), header});
-            encounterGroupLabels.append(encounter.toObject().value("base_label").toString());
         }
     }
     return true;
