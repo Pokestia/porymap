@@ -772,7 +772,6 @@ void Project::saveWildMonData() {
     monHeadersObject["fields"] = fieldsInfoArray;
 
     OrderedJson::array encountersArray;
-    //tsl::ordered_map<QString, tsl::ordered_map<QString, WildPokemonHeader>>
     for (auto keyPair : wildMonData) {
         OrderedJson::object encounterObject;
         OrderedJson::array headers;
